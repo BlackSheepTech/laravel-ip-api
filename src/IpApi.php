@@ -11,6 +11,8 @@ abstract class IpApi
 
     protected string $apiKey;
 
+    protected bool $disableOverusageProtection = false;
+
     public function apiKey(string $key): self
     {
         $this->apiKey = $key;
@@ -50,14 +52,20 @@ abstract class IpApi
         return $this;
     }
 
+    public function disableOverusageProtection(): self
+    {
+        $this->disableOverusageProtection = true;
+
+        return $this;
+    }
+
     protected function blockOverusage(): void
     {
-        if (config('ip-api.overusage_protection.enabled')) {
+        if (config('ip-api.overusage_protection.enabled') && ! $this->disableOverusageProtection) {
             $rl = Cache::get('ip-api_usage_rl', null);
             if ($rl === 0) {
                 throw new Exception('Rate limit exceeded. Resets at '.Cache::get('ip-api_usage_reset'));
             }
-
         }
     }
 }
