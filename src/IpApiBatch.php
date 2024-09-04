@@ -30,7 +30,7 @@ class IpApiBatch extends IpApi
     private function validateEntity(object|string $entity): void
     {
 
-        if(is_string($entity)) {
+        if (is_string($entity)) {
             throw_unless(
                 Validators::isValidDomain($entity) || Validators::isValidIpAddress($entity),
                 new \InvalidArgumentException('Query must be a valid domain or IP address.')
@@ -52,7 +52,7 @@ class IpApiBatch extends IpApi
                     new \InvalidArgumentException('Invalid language provided.')
                 );
             }
-    
+
             if (isset($entity->fields)) {
                 throw_unless(
                     array_diff(is_array($entity->fields) ? $entity->fields : explode(',', Str::remove(' ', $entity->fields)), Fields::values()) === [],
@@ -68,20 +68,20 @@ class IpApiBatch extends IpApi
 
         $this->blockOverusage();
 
-        $payload = array_merge(
+        $endpoint = 'batch/'.'?'.http_build_query(array_merge(
             [
                 'key' => $this->apiKey,
-                'json' => $this->entities
+                'json' => $this->entities,
             ],
             isset($this->fields) ? ['fields' => $this->fields] : [],
             isset($this->language) ? ['lang' => $this->language] : []
-        );
+        ));
 
         $response = HttpHelper::makeRequest(
             method: HttpMethod::POST(),
             baseUrl: $this->baseUrl,
-            endpoint: 'batch',
-            payload: $payload
+            endpoint: $endpoint,
+            payload: $this->entities
         );
 
         if ($response->successful()) {
