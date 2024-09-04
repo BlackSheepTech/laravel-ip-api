@@ -32,7 +32,7 @@ use ArchTech\Enums\Values;
  * @method static string Hosting()
  * @method static string Query()
  */
-enum GeolocationReturnField: string
+enum ReturnField: string
 {
     use InvokableCases;
     use Values;
