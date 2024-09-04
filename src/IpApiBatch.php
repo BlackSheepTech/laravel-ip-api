@@ -11,8 +11,6 @@ class IpApiBatch extends IpApi
 {
     private array $entities;
 
-    private string $language;
-
     public function __construct()
     {
         $this->baseUrl(config('ip-api.base_url'));
