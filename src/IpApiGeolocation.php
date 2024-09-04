@@ -2,9 +2,9 @@
 
 namespace BlackSheepTech\IpApi;
 
-use BlackSheepTech\IpApi\Enums\ReturnField as Fields;
 use BlackSheepTech\IpApi\Enums\GeolocationReturnFormat as Formats;
 use BlackSheepTech\IpApi\Enums\HttpMethod;
+use BlackSheepTech\IpApi\Enums\ReturnField as Fields;
 use BlackSheepTech\IpApi\Enums\ReturnLanguage as Languages;
 use Illuminate\Support\Str;
 
