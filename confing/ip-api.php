@@ -41,4 +41,12 @@ return [
         'format' => env('IP_API_DEFAULT_FORMAT', 'json'),
         'fields' => env('IP_API_DEFAULT_FIELDS', 'status,message,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,org,as,query'),
     ],
+
+    /*-------------------------------------------------------------------------
+    | Batch API Config
+    |------------------------------------------------------------------------*/
+
+    'batch' => [
+        'max_entities' => env('IP_API_BATCH_MAX_ENTITIES', 100),
+    ],
 ];
