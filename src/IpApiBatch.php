@@ -15,51 +15,50 @@ class IpApiBatch extends IpApi
     {
         $this->baseUrl(config('ip-api.base_url'));
         $this->apiKey(config('ip-api.api_key'));
-        $this->fields = config('ip-api.default.fields');
-        $this->language(config('ip-api.default.language'));
     }
 
     public function entities(array $entities): self
     {
         throw_if(count($entities) > config('ip-api.batch.max_entities'), new \InvalidArgumentException('Maximum number of entities per request exceeded.'));
-        collect($entities)->each(fn ($entity) => $this->validateEntity((object) $entity));
+        collect($entities)->each(fn (object|string $entity) => $this->validateEntity($entity));
 
         $this->entities = $entities;
 
         return $this;
     }
 
-    public function language(string $language): self
+    private function validateEntity(object|string $entity): void
     {
-        throw_unless(
-            in_array($language, Languages::values()),
-            new \InvalidArgumentException('Invalid language provided.')
-        );
 
-        $this->language = $language;
-
-        return $this;
-    }
-
-    private function validateEntity(object $entity): void
-    {
-        throw_unless(
-            Validators::isValidDomain($entity->query) || Validators::isValidIpAddress($entity->query),
-            new \InvalidArgumentException('Query must be a valid domain or IP address.')
-        );
-
-        if (isset($entity->lang)) {
+        if(is_string($entity)) {
             throw_unless(
-                in_array($entity->lang, Languages::values()),
-                new \InvalidArgumentException('Invalid language provided.')
+                Validators::isValidDomain($entity) || Validators::isValidIpAddress($entity),
+                new \InvalidArgumentException('Query must be a valid domain or IP address.')
             );
-        }
-
-        if (isset($entity->fields)) {
+        } else {
             throw_unless(
-                array_diff(is_array($entity->fields) ? $entity->fields : explode(',', Str::remove(' ', $entity->fields)), Fields::values()) === [],
-                new \InvalidArgumentException('Invalid fields provided.')
+                isset($entity->query),
+                new \InvalidArgumentException('Query must be provided.')
             );
+
+            throw_unless(
+                Validators::isValidDomain($entity->query) || Validators::isValidIpAddress($entity->query),
+                new \InvalidArgumentException('Query must be a valid domain or IP address.')
+            );
+
+            if (isset($entity->lang)) {
+                throw_unless(
+                    in_array($entity->lang, Languages::values()),
+                    new \InvalidArgumentException('Invalid language provided.')
+                );
+            }
+    
+            if (isset($entity->fields)) {
+                throw_unless(
+                    array_diff(is_array($entity->fields) ? $entity->fields : explode(',', Str::remove(' ', $entity->fields)), Fields::values()) === [],
+                    new \InvalidArgumentException('Invalid fields provided.')
+                );
+            }
         }
     }
 
@@ -69,17 +68,20 @@ class IpApiBatch extends IpApi
 
         $this->blockOverusage();
 
-        $payload = [
-            'key' => $this->apiKey,
-            'lang' => $this->language,
-            'data' => $this->entities,
-        ];
+        $payload = array_merge(
+            [
+                'key' => $this->apiKey,
+                'json' => $this->entities
+            ],
+            isset($this->fields) ? ['fields' => $this->fields] : [],
+            isset($this->language) ? ['lang' => $this->language] : []
+        );
 
         $response = HttpHelper::makeRequest(
             method: HttpMethod::POST(),
             baseUrl: $this->baseUrl,
             endpoint: 'batch',
-            payload: $payload,
+            payload: $payload
         );
 
         if ($response->successful()) {
