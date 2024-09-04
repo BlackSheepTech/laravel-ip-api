@@ -1,5 +1,5 @@
 {
-    "name": "black-sheep-tech/ip-api",
+    "name": "black-sheep-tech/laravel-ip-api",
     "description": "A simple service provider/wrapper for the IP API Service (https://ip-api.com).",
     "keywords": ["laravel", "ip-api"],
     "homepage": "https://github.com/BlackSheepTech/ip-api",
