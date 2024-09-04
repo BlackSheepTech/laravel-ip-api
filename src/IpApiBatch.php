@@ -42,7 +42,7 @@ class IpApiBatch extends IpApi
 
         if (is_string($entity)) {
             throw_unless(
-                Validators::isValidDomain($entity) || Validators::isValidIpAddress($entity),
+                Validators::isValidIpAddress($entity),
                 new \InvalidArgumentException('Query must be a valid domain or IP address.')
             );
         } else {
