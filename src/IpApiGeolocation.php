@@ -45,6 +45,16 @@ class IpApiGeolocation extends IpApi
         return $this;
     }
 
+    public function fields(string|array $fields): self
+    {
+        return parent::fields($fields);
+    }
+
+    public function language(string $language): self
+    {
+        return parent::language($language);
+    }
+
     private function validateParams(): void
     {
         throw_if(empty($this->apiKey), new \InvalidArgumentException('API Key must be provided.'));

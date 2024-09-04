@@ -27,6 +27,16 @@ class IpApiBatch extends IpApi
         return $this;
     }
 
+    public function fields(string|array $fields): self
+    {
+        return parent::fields($fields);
+    }
+
+    public function language(string $language): self
+    {
+        return parent::language($language);
+    }
+
     private function validateEntity(object|string $entity): void
     {
 
